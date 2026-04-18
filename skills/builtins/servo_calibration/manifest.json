@@ -1,0 +1,35 @@
+{
+  "@context": "https://nworobotics.cloud/skill/v1",
+  "name": "Servo Calibration",
+  "version": "1.0.0",
+  "skill_type": "calibration",
+  "runtime": "python",
+  "entry_point": "calibrate.py",
+  "description": "Calibrate a servo motor by sweeping through its range and recording PWM endpoints. Works with any serial-connected servo controller (Dynamixel, PCA9685, direct PWM).",
+  "tags": ["servo", "calibration", "hardware", "pwm", "builtin"],
+  "inputs": [
+    {"name": "servo_id", "type": "int", "description": "Servo channel index (0-based)", "required": true},
+    {"name": "controller_type", "type": "str", "description": "Controller type: pca9685 | dynamixel | direct", "required": true},
+    {"name": "port", "type": "str", "description": "Serial port (e.g. /dev/ttyUSB0)", "default": "/dev/ttyUSB0", "required": false},
+    {"name": "range_deg", "type": "float", "description": "Expected range in degrees", "default": 180.0, "required": false},
+    {"name": "step_deg", "type": "float", "description": "Step size for sweep in degrees", "default": 10.0, "required": false}
+  ],
+  "outputs": [
+    {"name": "min_pwm", "type": "int", "description": "PWM value at minimum position"},
+    {"name": "max_pwm", "type": "int", "description": "PWM value at maximum position"},
+    {"name": "center_pwm", "type": "int", "description": "PWM value at center (0 degrees)"},
+    {"name": "calibration_data", "type": "dict", "description": "Full calibration map: angle -> pwm"},
+    {"name": "success", "type": "bool", "description": "Whether calibration completed successfully"}
+  ],
+  "requirements": ["pyserial>=3.5"],
+  "hardware": {
+    "actuators": ["servo"],
+    "communication": ["serial_usb", "i2c"]
+  },
+  "license": "MIT",
+  "visibility": "public",
+  "timeout_sec": 60,
+  "allow_network": false,
+  "allow_filesystem": false,
+  "generator": "NWO Skill Engine v0.1.0"
+}

@@ -1,0 +1,32 @@
+{
+  "@context": "https://nworobotics.cloud/skill/v1",
+  "name": "Object Detection",
+  "version": "1.0.0",
+  "skill_type": "vision",
+  "runtime": "python",
+  "entry_point": "detect.py",
+  "description": "Detect objects in an image or camera frame using YOLOv8 (or a lightweight MobileNet fallback). Returns bounding boxes, class labels, and confidence scores.",
+  "tags": ["vision", "detection", "yolo", "camera", "perception", "builtin"],
+  "inputs": [
+    {"name": "image_path", "type": "str", "description": "Path to image file, or 'camera' to capture from default camera", "required": true},
+    {"name": "model", "type": "str", "description": "Model name: yolov8n | yolov8s | mobilenet", "default": "yolov8n", "required": false},
+    {"name": "confidence_threshold", "type": "float", "description": "Minimum confidence score (0-1)", "default": 0.5, "required": false},
+    {"name": "target_classes", "type": "list", "description": "Filter to specific class names (empty = all classes)", "default": [], "required": false}
+  ],
+  "outputs": [
+    {"name": "detections", "type": "list", "description": "List of {class, confidence, bbox: [x1,y1,x2,y2]} dicts"},
+    {"name": "count", "type": "int", "description": "Number of detections"},
+    {"name": "inference_ms", "type": "float", "description": "Inference time in milliseconds"},
+    {"name": "image_size", "type": "list", "description": "[width, height] of input image"}
+  ],
+  "requirements": ["Pillow>=10.0.0", "numpy>=1.26.0"],
+  "hardware": {
+    "sensors": ["rgb_camera"],
+    "min_compute": "raspberry_pi_4"
+  },
+  "license": "MIT",
+  "visibility": "public",
+  "timeout_sec": 30,
+  "allow_filesystem": true,
+  "generator": "NWO Skill Engine v0.1.0"
+}

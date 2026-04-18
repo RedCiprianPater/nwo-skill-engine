@@ -1,0 +1,30 @@
+{
+  "@context": "https://nworobotics.cloud/skill/v1",
+  "name": "Inter-Agent Message Broadcast",
+  "version": "1.0.0",
+  "skill_type": "communication",
+  "runtime": "python",
+  "entry_point": "broadcast.py",
+  "description": "Broadcast a structured message to one or more target agents via the NWO Agent Graph. Supports point-to-point, multicast, and broadcast patterns. Messages are posted as nodes to the shared knowledge graph.",
+  "tags": ["communication", "messaging", "swarm", "broadcast", "graph", "builtin"],
+  "inputs": [
+    {"name": "message", "type": "dict", "description": "Message payload to broadcast", "required": true},
+    {"name": "target_agents", "type": "list", "description": "List of target agent IDs (empty = broadcast to all)", "default": [], "required": false},
+    {"name": "message_type", "type": "str", "description": "Message type label: status_update | task_request | sensor_data | alert | capability_announce", "default": "status_update", "required": false},
+    {"name": "graph_api_url", "type": "str", "description": "NWO Agent Graph API URL", "default": "http://localhost:8000", "required": false},
+    {"name": "sender_agent_id", "type": "str", "description": "ID of the sending agent", "required": true},
+    {"name": "ttl_seconds", "type": "int", "description": "Message TTL in the graph (0 = permanent)", "default": 3600, "required": false}
+  ],
+  "outputs": [
+    {"name": "node_ids", "type": "list", "description": "Graph node IDs created for each message"},
+    {"name": "recipients", "type": "list", "description": "Agent IDs that received the message"},
+    {"name": "delivered_count", "type": "int", "description": "Number of successfully delivered messages"},
+    {"name": "failed_count", "type": "int", "description": "Number of delivery failures"}
+  ],
+  "requirements": ["httpx>=0.27.0"],
+  "license": "MIT",
+  "visibility": "public",
+  "timeout_sec": 30,
+  "allow_network": true,
+  "generator": "NWO Skill Engine v0.1.0"
+}

@@ -1,0 +1,60 @@
+version: "3.9"
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: nwo
+      POSTGRES_PASSWORD: nwopass
+      POSTGRES_DB: nwo_skills
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_skills_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nwo -d nwo_skills"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9002"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: password123
+    ports:
+      - "9010:9000"
+      - "9002:9002"
+    volumes:
+      - minio_skills_data:/data
+
+  minio-init:
+    image: minio/mc:latest
+    depends_on: [minio]
+    entrypoint: >
+      /bin/sh -c "sleep 3; mc alias set local http://minio:9000 minioadmin password123;
+      mc mb --ignore-existing local/nwo-skills; mc anonymous set public local/nwo-skills;"
+
+  skill-engine:
+    build: .
+    ports:
+      - "8003:8003"
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://nwo:nwopass@postgres:5432/nwo_skills
+      STORAGE_ENDPOINT_URL: http://minio:9000
+      STORAGE_PUBLIC_URL: http://localhost:9010/nwo-skills
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: password123
+      API_PORT: "8003"
+      RUNTIME_BACKEND: subprocess
+    depends_on: [postgres, minio]
+    restart: unless-stopped
+    volumes:
+      - ./src:/app/src
+      - ./skills:/app/skills
+      - ./sandbox:/app/sandbox
+
+volumes:
+  postgres_skills_data:
+  minio_skills_data:

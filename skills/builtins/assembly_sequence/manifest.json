@@ -1,0 +1,29 @@
+{
+  "@context": "https://nworobotics.cloud/skill/v1",
+  "name": "Assembly Sequence Runner",
+  "version": "1.0.0",
+  "skill_type": "assembly",
+  "runtime": "python",
+  "entry_point": "assemble.py",
+  "description": "Execute a multi-step assembly sequence defined as a JSON plan. Each step specifies a sub-skill to invoke, its inputs, and pass/fail conditions. Produces a structured execution log. Supports sequential and conditional branching.",
+  "tags": ["assembly", "sequence", "orchestration", "pipeline", "meta", "builtin"],
+  "inputs": [
+    {"name": "plan", "type": "dict", "description": "Assembly plan: {name, steps: [{skill_id, inputs, on_fail}]}", "required": true},
+    {"name": "skill_api_url", "type": "str", "description": "NWO Skill Engine API URL for sub-skill invocation", "default": "http://localhost:8003", "required": false},
+    {"name": "caller_agent_id", "type": "str", "description": "Agent ID passed to sub-skill executions", "default": null, "required": false},
+    {"name": "dry_run", "type": "bool", "description": "Validate plan without executing steps", "default": false, "required": false}
+  ],
+  "outputs": [
+    {"name": "status", "type": "str", "description": "overall | success | failed | partial"},
+    {"name": "steps_total", "type": "int", "description": "Number of steps in plan"},
+    {"name": "steps_completed", "type": "int", "description": "Steps that completed successfully"},
+    {"name": "execution_log", "type": "list", "description": "Per-step log: {step, skill_id, status, outputs, error, duration_ms}"},
+    {"name": "failed_step", "type": "str", "description": "Name of first failed step (null if all passed)"}
+  ],
+  "requirements": ["httpx>=0.27.0"],
+  "license": "MIT",
+  "visibility": "public",
+  "timeout_sec": 600,
+  "allow_network": true,
+  "generator": "NWO Skill Engine v0.1.0"
+}
